@@ -14,6 +14,12 @@ print("Server running")
 # Setup instance of CookingConverter
 converter = CookingConverter()
 
+# Setup dispatch table for volume & weight response service keys
+conversion_routes = {
+    "convert_volume": converter.convert_volume,
+    "convert_weight": converter.convert_weight
+}
+
 try:
     while True:
         # Receive message
@@ -42,26 +48,18 @@ try:
             # call battle_logic.py function
             response = {"damage": battle_logic(attack, defense, crit)}
 
-        elif service_key == "convert_volume":
+        elif service_key in conversion_routes:
             # Unpack data
             amount = data.get("amount")
             unit = data.get("unit")
             to_metric = data.get("to_metric")
 
             # call convert_volume function
+            func = conversion_routes[service_key]
             response = {
-                "conversion": converter.convert_volume(amount, unit, to_metric)
+                "conversion": func(amount, unit, to_metric)
             }
-        elif service_key == "convert_weight":
-            # Unpack data
-            amount = data.get("amount")
-            unit = data.get("unit")
-            to_metric = data.get("to_metric")
 
-            # call convert_volume function
-            response = {
-                "conversion": converter.convert_weight(amount, unit, to_metric)
-            }
         elif service_key == "convert_temp":
             # Unpack data
             value = data.get("value")
