@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#import zmq, time
+# import zmq, time
 
 class CookingConverter:
     def __init__(self):
@@ -24,29 +24,17 @@ class CookingConverter:
             }
         }
 
-    def convert_volume(self, amount, unit=None, to_metric=True):
-        conv = self.conversions["volume"]
+    def convert_volume_or_weight(self, amount, unit=None, to_metric=True):
+        conv = next((self.conversions[key] for key in ["volume", "weight"] if unit in self.conversions[key]), None)
+        if conv is None:
+            raise ValueError(f"Unknown unit: {unit}")
         if to_metric:
             unit = unit.lower()
             if unit in conv:
                 return amount * conv[unit]
-            raise ValueError(f"Unknown imperial volume unit: {unit}")
+            raise ValueError(f"Unknown imperial unit: {unit}")
         else:
             # Round to nearest common kitchen volume unit
-            sorted_units = sorted(conv.items(), key=lambda x: x[1])
-            best_match = min(sorted_units, key=lambda x: abs(amount - x[1]))
-            rounded_amount = round(amount / best_match[1], 2)
-            return rounded_amount, best_match[0]
-    
-    def convert_weight(self, amount, unit=None, to_metric=True):
-        conv = self.conversions["weight"]
-        if to_metric:
-            unit = unit.lower()
-            if unit in conv:
-                return amount * conv[unit]
-            raise ValueError(f"Unknown imperial weight unit: {unit}")
-        else:
-            # Round to nearest common kitchen weight unit
             sorted_units = sorted(conv.items(), key=lambda x: x[1])
             best_match = min(sorted_units, key=lambda x: abs(amount - x[1]))
             rounded_amount = round(amount / best_match[1], 2)
@@ -62,18 +50,18 @@ if __name__ == '__main__':
     cc = CookingConverter()
     
     # 520 mL to imperial
-    print("520 mL to imperial volume:", cc.convert_volume(520, to_metric=False))  #(1.04, 'pint')
+    print("520 mL to imperial volume:", cc.convert_volume_or_weight(520, to_metric=False))  # (1.04, 'pint')
 
     # 900 grams to imperial
-    print("900 grams to imperial weight:", cc.convert_weight(900, to_metric=False))  #(1.98, 'pound')
+    print("900 grams to imperial weight:", cc.convert_volume_or_weight(900, to_metric=False))  # (1.98, 'pound')
 
     # Imperial to Metric
-    print("2 tablespoons to mL:", cc.convert_volume(2, "tablespoon"))
-    print("1 pound to grams:", cc.convert_weight(1, "pound"))
+    print("2 tablespoons to mL:", cc.convert_volume_or_weight(2, "tablespoon"))
+    print("1 pound to grams:", cc.convert_volume_or_weight(1, "pound"))
     print("350°F to °C:", cc.convert_temperature(350, "F_to_C"))
     
     # Metric to Imperial
-    print("500 mL to imperial volume:", cc.convert_volume(500, "cup", to_metric=False))
-    print("1000 grams to imperial weight:", cc.convert_weight(1000, "pound", to_metric=False))
+    print("500 mL to imperial volume:", cc.convert_volume_or_weight(500, "cup", to_metric=False))
+    print("1000 grams to imperial weight:", cc.convert_volume_or_weight(1000, "pound", to_metric=False))
     print("180°C to °F:", cc.convert_temperature(180, "C_to_F"))
 
