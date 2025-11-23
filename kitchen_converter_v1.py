@@ -25,6 +25,7 @@ class CookingConverter:
         }
 
     def convert_volume_or_weight(self, amount, unit=None, to_metric=True):
+        # Assign conversion table to be referenced according to unit passed
         conv = next((self.conversions[key] for key in ["volume", "weight"] if unit in self.conversions[key]), None)
         if conv is None:
             raise ValueError(f"Unknown unit: {unit}")
@@ -34,7 +35,7 @@ class CookingConverter:
                 return amount * conv[unit]
             raise ValueError(f"Unknown imperial unit: {unit}")
         else:
-            # Round to nearest common kitchen volume unit
+            # Round to nearest common imperial unit
             sorted_units = sorted(conv.items(), key=lambda x: x[1])
             best_match = min(sorted_units, key=lambda x: abs(amount - x[1]))
             rounded_amount = round(amount / best_match[1], 2)
