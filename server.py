@@ -35,12 +35,14 @@ try:
             response = {"error": "Missing service_key"}
         elif service_key == "battle_logic":
             # Unpack data
-            attack = data.get("attack", 0)
-            defense = data.get("defense", 0)
-            crit = data.get("crit", 1)
+            player = {}
+            enemy = {}
+            for key in ['health', 'attack', 'defense']:
+                player[key] = data[0][key]
+                enemy[key] = data[1][key]
 
             # call battle_logic.py function
-            response = {"damage": battle_logic(attack, defense, crit)}
+            response = battle_logic(player, enemy)
 
         elif service_key in ["convert_volume", "convert_weight"]:
             # Unpack data

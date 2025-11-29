@@ -1,6 +1,17 @@
-def battle_logic(attack, defense, crit=1):
+def battle_logic(player, enemy):
     """
-    Calculates total damage based on attack, defense and crit multiplyer
+    Calculates the result of a turn of battle between the player and an enemy.
     """
-    raw_damage = (attack - defense) * crit
-    return max(0, raw_damage)
+    # Player goes first
+    damage = player['attack'] - enemy['defense']
+    enemy['health'] -= damage
+    if enemy['health'] <= 0:
+        enemy['health'] = 0
+        return player, enemy
+
+    # Enemy attacks
+    damage = enemy['attack'] - player['defense']
+    player['health'] -= damage
+    if player['health'] < 0:
+        player['health'] = 0
+    return player, enemy
