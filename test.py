@@ -12,11 +12,14 @@ socket.connect("tcp://localhost:5556")
 # Setup request for battle_logic service
 request_dmg = {
     "service_key": "battle_logic",
-    "data": {
-        "attack": 10,   # Correct response should be 7.5
-        "defense": 5,
-        "crit": 1.5
-    }
+    "data": [
+        {'health': 100,
+         'attack': 10,
+         'defense': 5},
+        {'health': 100,
+         'attack': 8,
+         'defense': 2}
+    ]
 }
 
 # Send request
